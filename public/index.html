@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous Credential Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generate Anonymous Credential</h1>
+        <form id="credentialForm">
+            <input type="text" id="patientId" placeholder="Enter Patient ID" required>
+            <input type="text" id="hospitalId" placeholder="Enter Hospital ID" required>
+            <input type="text" id="serviceToken" placeholder="Enter Service Token" required>
+            <input type="text" id="timestamp" placeholder="Enter Timestamp (e.g., 2024-09-03T10:15:30)" required>
+            <button type="submit">Generate Credential</button>
+        </form>
+        <pre id="result"></pre>
+    </div>
+
+    <script>
+        document.getElementById('credentialForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const patientId = document.getElementById('patientId').value;
+            const hospitalId = document.getElementById('hospitalId').value;
+            const serviceToken = document.getElementById('serviceToken').value;
+            const timestamp = document.getElementById('timestamp').value;
+
+            const response = await fetch('/api/generate-credential', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ patientId, hospitalId, serviceToken, timestamp })
+            });
+
+            const result = await response.json();
+            
+            // Display each hash and the final credential ID
+            document.getElementById('result').textContent = `
+Patient ID Hash: ${result.patient_id_hash}
+Hospital ID Hash: ${result.hospital_id_hash}
+Service Token Hash: ${result.service_token_hash}
+
+Anonymous Credential ID: ${result.credential_id}
+            `;
+        });
+    </script>
+</body>
+</html>
